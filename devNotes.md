@@ -34,3 +34,8 @@ Creating a well-structured template app with a Flutter frontend and a Rust backe
 - **API Documentation:** Maintain clear documentation for your GraphQL API to make it easier to understand and extend in future projects.
 
 This high-level plan provides a structured approach to building your template app, ensuring it's scalable, maintainable, and ready for future enhancements.
+
+## Installation Notes
+
+I successfully completed step 1 (Project Structure and Setup). I installed Flutter, but needed to install the `adb` command with apt-get. I received a few errors when checking the Flutter install with `Flutter doctor`. So I installed Android Studio. I also needed to install the SDK Manager, but the tools install a Windows batch file that cannot be run by bash.
+
