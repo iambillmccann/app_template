@@ -39,5 +39,14 @@ This high-level plan provides a structured approach to building your template ap
 
 I successfully completed step 1 (Project Structure and Setup). I installed Flutter, but needed to install the `adb` command with apt-get. I received a few errors when checking the Flutter install with `Flutter doctor`. So I installed Android Studio. I also needed to install the SDK Manager, but the tools install a Windows batch file that cannot be run by bash.
 
+### Comments
 
 The Flutter configuration under WSL continues to be problematic. I am thinking that maybe I will move away from Flutter and into some other framework, maybe React, Vue, or Svelt. I may give Flutter one more try by having dual installations of Android Studio. I would only end up using the Windows installation if I ever build for native Android.
+
+I attempted to resolve the problem by moving the command line tools under the folder for android-tools. That when I discovered that I should run this command ...
+
+`$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31"`
+
+But that failed with this error ...
+
+`Warning: Failed to read or create install properties file.`
