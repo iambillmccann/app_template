@@ -1,136 +1,74 @@
-## Getting Started
+## Setting up the development environment
 
-This app requires Rust for the backend and Flutter for the frontend. If you do not have this tooling installed, here are the setup instructions (Linux only).
+### Rust
 
-### Installing Rust
+To install the latest version of Rust on your Ubuntu 20.04 system on WSL2, you can use Rustup, which is the official installer and version management tool for Rust. Here's how you can do it:
 
-1. **Install Rust:**
-   Rust can be installed using `rustup`, which is the official installer and version management tool for Rust.
+1. **Open your Ubuntu Terminal on WSL2:**
+   - You can do this by searching for "Ubuntu" in your Windows start menu and opening the app.
 
-   ```bash
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-   ```
-
-   Follow the on-screen instructions to complete the installation. Typically, it involves hitting `Enter` to proceed with the default installation.
-
-2. **Configure your environment:**
-   `rustup` typically configures your shell to include Cargo’s bin directory (where Rust’s build tools and dependencies are installed) in your `PATH`. If it doesn’t, you can manually add it by placing the following line in your `.bashrc` or `.bash_profile`:
-
-   ```bash
-   export PATH="$HOME/.cargo/bin:$PATH"
-   ```
-
-   Reload your bash configuration:
-
-   ```bash
-   source ~/.bashrc
-   ```
-
-3. **Verify the installation:**
-   Check if Rust has been installed correctly by running:
-
-   ```bash
-   rustc --version
-   ```
-
-### Installing Flutter
-
-1. **Install Flutter:**
-   First, install the base dependencies needed for Flutter:
-
-   ```bash
-   sudo apt update
-   sudo apt install -y git unzip xz-utils curl
-   ```
-
-2. **Download the Flutter SDK:**
-   You can download the stable version of Flutter SDK and extract it. The following commands fetch the latest stable version and set it up in your home directory:
-
-   ```bash
-   cd ~
-   curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.0.5-stable.tar.xz
-   tar -xvf flutter_linux_3.0.5-stable.tar.xz
-   ```
-
-3. **Set up the Flutter path:**
-   Add Flutter to your `PATH` so that you can run Flutter commands in any terminal session:
-
-   ```bash
-   echo 'export PATH="$PATH:$HOME/flutter/bin"' >> ~/.bashrc
-   source ~/.bashrc
-   ```
-
-4. **Verify the installation:**
-   Once Flutter is installed, you can verify it by running:
-
-   ```bash
-   flutter doctor
-   ```
-
-   This command checks your environment and displays a report to the terminal window. It’s likely that `flutter doctor` will show some issues related to Android toolchain setup since you’re using WSL2 and might not have GUI support configured. For now, focus on Flutter being correctly set up to run and compile.
-
-### Special Configurations for WSL2
-When using WSL2, especially with GUI applications or mobile development environments like Android Studio, you might face issues related to GUI support and device connectivity (USB). Since you’re focusing on backend development with Rust and Flutter UI which can compile for web initially, these won't affect your immediate setup. For future needs, you might consider options like connecting WSL2 to a Windows-based Android emulator or configuring X11 forwarding for GUI apps.
-
-This setup should get you started on your project development with Rust and Flutter on Ubuntu via WSL2. Let me know if you encounter any issues or need further assistance!
-
-## Setting up Android Tooling for WSL 2
-
-Since you're working on WSL2 and given the known issues with Android emulation performance in that environment, the optimal approach is to install Android Studio on your Windows system rather than directly on WSL2. This setup allows you to utilize the full performance capabilities of Windows for Android emulation and UI design while still developing your Flutter and Rust code in the Linux environment provided by WSL2. Here’s how you can set it up:
-
-### Step 1: Install Android Studio on Windows
-
-1. **Download Android Studio:**
-   - Go to the [official Android Studio download page](https://developer.android.com/studio) and download the installer for Windows.
-
-2. **Run the Installer:**
-   - Execute the downloaded installer and follow the prompts to install Android Studio. During the installation, ensure you select the components you need, including the Android SDK, Android Virtual Device (AVD), and if needed, any specific APIs or tools.
-
-3. **Configure Android Studio:**
-   - Launch Android Studio after installation. It will guide you through a setup wizard, which includes downloading any additional SDK components required.
-
-### Step 2: Configure WSL2 to Use the Android SDK from Windows
-
-After installing Android Studio and the Android SDK on Windows, you need to configure your WSL2 environment to use the SDK from Windows. This involves setting environment variables in WSL2 that point to the SDK location on your Windows system.
-
-1. **Locate the Android SDK on Windows:**
-   - By default, the Android SDK is installed in `C:\Users\<YourUsername>\AppData\Local\Android\Sdk`. You can confirm this path in Android Studio under **Settings** > **Appearance & Behavior** > **System Settings** > **Android SDK**.
-
-2. **Mount Windows Drives on WSL2:**
-   - Windows drives are typically mounted under `/mnt/` in WSL2. For example, your `C:` drive is mounted at `/mnt/c`.
-
-3. **Set Environment Variables in WSL2:**
-   - Open your WSL2 terminal and add the following lines to your `.bashrc` or `.bash_profile` to set the SDK path:
+2. **Install the build-essential package:**
+   - This package contains tools required for compiling Rust programs, such as GCC.
+   - Run the following command:
      ```bash
-     export ANDROID_HOME=/mnt/c/Users/<YourUsername>/AppData/Local/Android/Sdk
-     export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+     sudo apt update && sudo apt install build-essential
      ```
-   - Replace `<YourUsername>` with your actual Windows username.
-   - Apply the changes by sourcing the profile:
+
+3. **Install Rust using Rustup:**
+   - Run the following command to download and start the installation of Rust:
      ```bash
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+     ```
+   - This script downloads and installs `rustup`, which is the Rust toolchain installer, along with the default compiler (`rustc`), standard library, and the package manager (`cargo`).
+
+4. **Configure your path (if not automatically done by the installation script):**
+   - Typically, the installation script configures the PATH environment variable to include Cargo’s bin directory. If it does not, you might need to add it manually:
+     ```bash
+     echo 'source $HOME/.cargo/env' >> ~/.bashrc
      source ~/.bashrc
      ```
 
-4. **Verify the Configuration:**
-   - In your WSL2 terminal, check that the `adb` command (part of the platform-tools) is working:
+5. **Verify the installation:**
+   - To ensure Rust is installed correctly, you can run:
      ```bash
-     adb version
+     rustc --version
      ```
 
-### Step 3: Integrating with Flutter
+This will confirm the installed version of Rust, and you are all set to start using Rust on your Ubuntu system in WSL2!
 
-Ensure that Flutter in WSL2 uses the correct Android SDK path:
+### VS Code
 
-- Run:
-  ```bash
-  flutter config --android-sdk "/mnt/c/Users/<YourUsername>/AppData/Local/Android/Sdk"
-  ```
+Setting up Visual Studio Code (VS Code) for Rust development involves installing the Rust toolchain, which you've already done, and configuring VS Code with the appropriate extensions and settings for an optimal Rust development experience. Here’s how to do it:
 
-### Step 4: Handling Emulators
+1. **Install the Rust Analyzer Extension:**
+   - Open VS Code.
+   - Go to the Extensions view by clicking on the square icon on the sidebar or pressing `Ctrl+Shift+X`.
+   - Search for **Rust Analyzer**. This is a powerful extension for Rust development, providing features like code completion, on-the-fly error checks, and more.
+   - Click on **Install** to add the extension to VS Code.
 
-Since you cannot run Android emulators efficiently in WSL2, use the emulators managed through Android Studio on Windows. When you need to test your app:
-- Start the emulator via Android Studio on Windows.
-- Use the Flutter tools in WSL2 to deploy to the emulator by targeting it as a connected device.
+2. **Configure the Editor Settings (Optional):**
+   - To enhance your coding experience with features like format on save, you might want to adjust your editor settings. You can open settings by pressing `Ctrl+,` or selecting **File > Preferences > Settings**.
+   - In the search bar at the top, type `rust` to find Rust-specific settings, or type specific settings such as `format on save`.
+   - To enable format on save, search for **Editor: Format On Save** and make sure the checkbox is enabled.
 
-This setup leverages the strengths of both environments: Windows for Android-specific tooling and UI, and WSL2 for Linux-based development in Flutter and Rust. If you encounter any issues with this setup or need further assistance, feel free to ask!
+3. **Install Additional Tools:**
+   - **Cargo**: Rust’s package manager, which should already be installed with Rustup.
+   - **Rustfmt**: The Rust code formatter, you can install it via Rustup:
+     ```bash
+     rustup component add rustfmt
+     ```
+   - **Clippy**: A collection of lints to catch common mistakes and improve your Rust code, you can install it via Rustup:
+     ```bash
+     rustup component add clippy
+     ```
 
+4. **Check Your Rust Environment in VS Code:**
+   - Open a Rust project or create a new one (you can create a new project using Cargo by running `cargo new my_project` in the terminal).
+   - Open the command palette by pressing `Ctrl+Shift+P` and type **Rust Analyzer: Reload workspace** to ensure the Rust Analyzer extension is properly recognizing your Rust environment.
+   - Try opening a `.rs` file and typing some Rust code to see if the autocomplete, error highlighting, and other features are working.
+
+5. **Debugging Setup:**
+   - To set up debugging, you'll need to install the **CodeLLDB** extension from the VS Code marketplace, which supports debugging Rust applications.
+   - After installing, you can configure your `launch.json` (accessible via the Run and Debug sidebar or by pressing `Ctrl+Shift+D`) to use CodeLLDB for Rust debugging.
+
+With these steps, your VS Code should be well equipped for Rust development.
