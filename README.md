@@ -72,3 +72,39 @@ Setting up Visual Studio Code (VS Code) for Rust development involves installing
    - After installing, you can configure your `launch.json` (accessible via the Run and Debug sidebar or by pressing `Ctrl+Shift+D`) to use CodeLLDB for Rust debugging.
 
 With these steps, your VS Code should be well equipped for Rust development.
+
+### Dioxus
+
+Start with the OpenSSL dependency ...
+
+#### macOS (Homebrew)
+`$ brew install openssl@3`
+
+#### macOS (MacPorts)
+`$ sudo port install openssl`
+
+#### macOS (pkgsrc)
+`$ sudo pkgin install openssl`
+
+#### Arch Linux
+`$ sudo pacman -S pkg-config openssl`
+
+#### Debian and Ubuntu
+`$ sudo apt-get install pkg-config libssl-dev`
+
+#### Fedora
+`$ sudo dnf install pkg-config perl-FindBin openssl-devel`
+
+#### Alpine Linux
+`$ apk add pkgconfig openssl-dev`
+
+#### openSUSE
+`$ sudo zypper in libopenssl-devel`
+
+Install the CLI
+
+`$ cargo install dioxus-cli`
+
+Check the CLI installed properly
+
+`$ dx --version`
