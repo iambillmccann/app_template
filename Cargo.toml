@@ -1,5 +1,5 @@
 [package]
-name = "app-template"
+name = "app_template"
 version = "0.1.0"
 authors = ["Bill McCann <bill.mccann@gmail.com>"]
 edition = "2021"
@@ -7,10 +7,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-dioxus = { version = "0.5", features = ["web", "router"] }
+chrono = { version = "0.4", features = ["serde"] }
+dioxus = { version = "0.5.0", features = ["web", "router"] }
+serde = { version = "1.0", features = ["derive"] }
 
 # Debug
 log = "0.4.19"
 dioxus-logger = "0.4.1"
 console_error_panic_hook = "0.1.7"
+serde_json = "1.0.116"
