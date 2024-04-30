@@ -3,9 +3,12 @@ mod components;
 mod types;
 
 use dioxus::prelude::*;
+use futures::future::join_all;
 
 use crate::components::Comment;
 use crate::types::Comment;
+use crate::types::StoryItem;
+use crate::types::StoryPageData;
 
 fn main() {
     launch(App);
@@ -142,11 +145,6 @@ fn Preview() -> Element {
     }
 }
 
-// Define the Hackernews API and types
-use chrono::{DateTime, Utc};
-use futures::future::join_all;
-use serde::{Deserialize, Serialize};
-
 pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
 pub static ITEM_API: &str = "item/";
 pub static USER_API: &str = "user/";
@@ -169,33 +167,6 @@ pub async fn get_stories(count: usize) -> Result<Vec<StoryItem>, reqwest::Error>
         .into_iter()
         .filter_map(|story| story.ok())
         .collect())
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StoryPageData {
-    #[serde(flatten)]
-    pub item: StoryItem,
-    #[serde(default)]
-    pub comments: Vec<Comment>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StoryItem {
-    pub id: i64,
-    pub title: String,
-    pub url: Option<String>,
-    pub text: Option<String>,
-    #[serde(default)]
-    pub by: String,
-    #[serde(default)]
-    pub score: i64,
-    #[serde(default)]
-    pub descendants: i64,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub time: DateTime<Utc>,
-    #[serde(default)]
-    pub kids: Vec<i64>,
-    pub r#type: String,
 }
 
 pub async fn get_story(id: i64) -> Result<StoryPageData, reqwest::Error> {

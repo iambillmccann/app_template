@@ -1,5 +1,3 @@
-// src/components/Comment.rs
-
 use crate::types::comment::Comment as CommentType;
 use dioxus::prelude::*;
 

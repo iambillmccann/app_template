@@ -1,5 +1,3 @@
-// src/types/comment.rs
-
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
