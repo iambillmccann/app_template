@@ -1,14 +1,16 @@
 #![allow(non_snake_case)]
 mod components;
+mod constants;
 mod types;
 
 use dioxus::prelude::*;
 use futures::future::join_all;
 
 use crate::components::Comment;
-use crate::types::Comment;
+use crate::components::StoryListing;
+use crate::constants::{BASE_API_URL, ITEM_API};
+use crate::types::PreviewState;
 use crate::types::StoryItem;
-use crate::types::StoryPageData;
 
 fn main() {
     launch(App);
@@ -25,6 +27,7 @@ pub fn App() -> Element {
     }
 }
 
+// Todo: make this its own component
 fn Stories() -> Element {
     let stories = use_resource(move || get_stories(10));
 
@@ -41,90 +44,7 @@ fn Stories() -> Element {
     }
 }
 
-async fn resolve_story(
-    mut full_story: Signal<Option<StoryPageData>>,
-    mut preview_state: Signal<PreviewState>,
-    story_id: i64,
-) {
-    if let Some(cached) = full_story.as_ref() {
-        *preview_state.write() = PreviewState::Loaded(cached.clone());
-        return;
-    }
-
-    *preview_state.write() = PreviewState::Loading;
-    if let Ok(story) = get_story(story_id).await {
-        *preview_state.write() = PreviewState::Loaded(story.clone());
-        *full_story.write() = Some(story);
-    }
-}
-
-#[component]
-fn StoryListing(story: ReadOnlySignal<StoryItem>) -> Element {
-    let mut preview_state = consume_context::<Signal<PreviewState>>();
-    let StoryItem {
-        title,
-        url,
-        by,
-        score,
-        time,
-        kids,
-        id,
-        ..
-    } = story();
-    let full_story = use_signal(|| None);
-
-    let url = url.as_deref().unwrap_or_default();
-    let hostname = url
-        .trim_start_matches("https://")
-        .trim_start_matches("http://")
-        .trim_start_matches("www.");
-    let score = format!("{score} {}", if score == 1 { " point" } else { " points" });
-    let comments = format!(
-        "{} {}",
-        kids.len(),
-        if kids.len() == 1 {
-            " comment"
-        } else {
-            " comments"
-        }
-    );
-    let time = time.format("%D %l:%M %p");
-
-    rsx! {
-        div {
-            padding: "0.5rem",
-            position: "relative",
-            onmouseenter: move |_event| { resolve_story(full_story, preview_state, id) },
-            div { font_size: "1.5rem",
-                a {
-                    href: url,
-                    onfocus: move |_event| { resolve_story(full_story, preview_state, id) },
-                    "{title}"
-                }
-                a {
-                    color: "gray",
-                    href: "https://news.ycombinator.com/from?site={hostname}",
-                    text_decoration: "none",
-                    " ({hostname})"
-                }
-            }
-            div { display: "flex", flex_direction: "row", color: "gray",
-                div { "{score}" }
-                div { padding_left: "0.5rem", "by {by}" }
-                div { padding_left: "0.5rem", "{time}" }
-                div { padding_left: "0.5rem", "{comments}" }
-            }
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-enum PreviewState {
-    Unset,
-    Loading,
-    Loaded(StoryPageData),
-}
-
+// Todo: make this its own component
 fn Preview() -> Element {
     let preview_state = consume_context::<Signal<PreviewState>>();
 
@@ -145,11 +65,6 @@ fn Preview() -> Element {
     }
 }
 
-pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
-pub static ITEM_API: &str = "item/";
-pub static USER_API: &str = "user/";
-const COMMENT_DEPTH: i64 = 2;
-
 pub async fn get_story_preview(id: i64) -> Result<StoryItem, reqwest::Error> {
     let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
     reqwest::get(&url).await?.json().await
@@ -167,40 +82,4 @@ pub async fn get_stories(count: usize) -> Result<Vec<StoryItem>, reqwest::Error>
         .into_iter()
         .filter_map(|story| story.ok())
         .collect())
-}
-
-pub async fn get_story(id: i64) -> Result<StoryPageData, reqwest::Error> {
-    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
-    let mut story = reqwest::get(&url).await?.json::<StoryPageData>().await?;
-    let comment_futures = story.item.kids.iter().map(|&id| get_comment(id));
-    let comments = join_all(comment_futures)
-        .await
-        .into_iter()
-        .filter_map(|c| c.ok())
-        .collect();
-
-    story.comments = comments;
-    Ok(story)
-}
-
-#[async_recursion::async_recursion(?Send)]
-pub async fn get_comment_with_depth(id: i64, depth: i64) -> Result<Comment, reqwest::Error> {
-    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
-    let mut comment = reqwest::get(&url).await?.json::<Comment>().await?;
-    if depth > 0 {
-        let sub_comments_futures = comment
-            .kids
-            .iter()
-            .map(|story_id| get_comment_with_depth(*story_id, depth - 1));
-        comment.sub_comments = join_all(sub_comments_futures)
-            .await
-            .into_iter()
-            .filter_map(|c| c.ok())
-            .collect();
-    }
-    Ok(comment)
-}
-
-pub async fn get_comment(comment_id: i64) -> Result<Comment, reqwest::Error> {
-    get_comment_with_depth(comment_id, COMMENT_DEPTH).await
 }
