@@ -1,5 +1,11 @@
 #![allow(non_snake_case)]
+mod components;
+mod types;
+
 use dioxus::prelude::*;
+
+use crate::components::Comment;
+use crate::types::Comment;
 
 fn main() {
     launch(App);
@@ -136,19 +142,6 @@ fn Preview() -> Element {
     }
 }
 
-#[component]
-fn Comment(comment: Comment) -> Element {
-    rsx! {
-        div { padding: "0.5rem",
-            div { color: "gray", "by {comment.by}" }
-            div { dangerous_inner_html: "{comment.text}" }
-            for kid in &comment.sub_comments {
-                Comment { comment: kid.clone() }
-            }
-        }
-    }
-}
-
 // Define the Hackernews API and types
 use chrono::{DateTime, Utc};
 use futures::future::join_all;
@@ -184,23 +177,6 @@ pub struct StoryPageData {
     pub item: StoryItem,
     #[serde(default)]
     pub comments: Vec<Comment>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Comment {
-    pub id: i64,
-    /// there will be no by field if the comment was deleted
-    #[serde(default)]
-    pub by: String,
-    #[serde(default)]
-    pub text: String,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub time: DateTime<Utc>,
-    #[serde(default)]
-    pub kids: Vec<i64>,
-    #[serde(default)]
-    pub sub_comments: Vec<Comment>,
-    pub r#type: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
