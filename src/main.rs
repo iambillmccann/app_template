@@ -1,29 +1,30 @@
 #![allow(non_snake_case)]
 mod components;
 mod constants;
+mod pages;
 mod types;
 
+use crate::pages::HomePage;
+use crate::pages::LandingPage;
 use dioxus::prelude::*;
-
-use crate::components::Preview;
-use crate::components::Stories;
-use crate::types::PreviewState;
 
 // Urls are relative to your Cargo.toml file
 const _TAILWIND_URL: &str = manganis::mg!(file("public/tailwind.css"));
 
-fn main() {
-    launch(App);
+// All of our routes will be a variant of this Route enum
+#[derive(Routable, PartialEq, Clone)]
+enum Route {
+    #[route("/")]
+    LandingPage {},
+    #[route("/home")]
+    HomePage {},
 }
 
-// ToDo ... Make this a page.
-pub fn App() -> Element {
-    use_context_provider(|| Signal::new(PreviewState::Unset));
-
-    rsx! {
-        div { class: "flex w-full",
-        div { class: "w-1/2 border border-gray-300 bg-gray-50 p-4 m-4", Stories {} }
-        div { class: "w-1/2 border border-gray-300 bg-gray-50 p-4 m-4", Preview {} }
-    }
-    }
+fn main() {
+    launch(|| {
+        rsx! {
+            // style { {include_str!("public/tailwind.css")} }
+            Router::<Route> {}
+        }
+    });
 }
