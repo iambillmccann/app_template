@@ -6,6 +6,7 @@ mod types;
 
 use crate::pages::HomePage;
 use crate::pages::LandingPage;
+// use crate::pages::PageNotFound;
 use dioxus::prelude::*;
 
 // Urls are relative to your Cargo.toml file
@@ -18,13 +19,21 @@ enum Route {
     LandingPage {},
     #[route("/home")]
     HomePage {},
+    #[route("/:..route")]
+    PageNotFound { route: Vec<String> },
 }
 
 fn main() {
     launch(|| {
-        rsx! {
-            // style { {include_str!("public/tailwind.css")} }
-            Router::<Route> {}
-        }
+        rsx! { Router::<Route> {} }
     });
+}
+
+pub fn PageNotFound(route: Vec<String>) -> Element {
+    rsx! {
+        div {
+            class: "flex items-center justify-center h-screen bg-black text-white text-4xl",
+            "Oops! The page {route:?} not found."
+        }
+    }
 }
