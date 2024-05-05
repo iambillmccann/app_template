@@ -6,7 +6,7 @@ mod types;
 
 use crate::pages::HomePage;
 use crate::pages::LandingPage;
-// use crate::pages::PageNotFound;
+use crate::pages::PageNotFound;
 use dioxus::prelude::*;
 
 // Urls are relative to your Cargo.toml file
@@ -27,14 +27,4 @@ fn main() {
     launch(|| {
         rsx! { Router::<Route> {} }
     });
-}
-
-#[component]
-pub fn PageNotFound(route: Vec<String>) -> Element {
-    rsx! {
-        div {
-            class: "flex items-center justify-center h-screen bg-black text-white text-4xl",
-            "Oops! The page {route:?} not found."
-        }
-    }
 }
