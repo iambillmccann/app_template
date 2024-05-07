@@ -50,7 +50,6 @@ fn main() {
         }
     };
 
-    let items: String = "option/value".to_string();
     // Now you can use firebase_settings to access your Firebase project settings
 
     // Launch the application
