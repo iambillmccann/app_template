@@ -4,6 +4,7 @@ mod constants;
 mod pages;
 mod types;
 
+use crate::pages::AppSettingsPage;
 use crate::pages::HomePage;
 use crate::pages::LandingPage;
 use crate::pages::PageNotFound;
@@ -22,6 +23,8 @@ enum Route {
     LandingPage {},
     #[route("/home")]
     HomePage {},
+    #[route("/settings/:items")]
+    AppSettingsPage { items: String },
     #[route("/:..route")]
     PageNotFound { route: Vec<String> },
 }
@@ -29,16 +32,25 @@ enum Route {
 fn main() {
     // Load Firebase settings
     let mut settings = Config::default();
-    settings
-        .merge(File::with_name("config"))
-        .expect("Failed to load config file")
-        .merge(Environment::with_prefix("APP"))
-        .expect("Failed to load environment variables");
+    match settings.merge(File::with_name("config")) {
+        Ok(_) => (),
+        Err(_) => eprintln!("Failed to load config file"),
+    }
 
-    let _firebase_settings = settings
-        .get::<HashMap<String, String>>("firebase")
-        .expect("Failed to load Firebase settings");
+    match settings.merge(Environment::with_prefix("APP")) {
+        Ok(_) => (),
+        Err(_) => eprintln!("Failed to load environment variables"),
+    }
 
+    let _firebase_settings = match settings.get::<HashMap<String, String>>("firebase") {
+        Ok(settings) => settings,
+        Err(e) => {
+            eprintln!("Failed to load Firebase settings: {}", e);
+            HashMap::new() // Use an empty HashMap as the default settings
+        }
+    };
+
+    let items: String = "option/value".to_string();
     // Now you can use firebase_settings to access your Firebase project settings
 
     // Launch the application
