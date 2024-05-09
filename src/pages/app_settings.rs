@@ -7,9 +7,12 @@ use std::collections::HashMap;
 #[component]
 pub fn AppSettingsPage(items: String) -> Element {
     let mut settings = Config::default();
-    match settings.merge(File::with_name("config")) {
+    let mut message: String = String::from("This is Ok."); // Change the type of `message` to `String`
+    let config_path = format!("{}/config.toml", env!("CARGO_MANIFEST_DIR"));
+
+    match settings.merge(File::with_name(&config_path)) {
         Ok(_) => (),
-        Err(_) => eprintln!("Failed to load config file"),
+        Err(e) => message = format!("Failed to load the config file: {}", e),
     }
 
     match settings.merge(Environment::with_prefix("APP")) {
@@ -33,6 +36,8 @@ pub fn AppSettingsPage(items: String) -> Element {
             div {
                 p { "Show this: {items}" },
                 p { "Firebase settings: {firebase_settings_str}" }
+                p { "{message}" }
+                p { "{config_path}" }
             }
         }
     }
