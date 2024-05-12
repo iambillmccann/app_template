@@ -8,7 +8,7 @@ use std::collections::HashMap;
 pub fn AppSettingsPage(items: String) -> Element {
     let mut settings = Config::default();
     let mut message: String = String::from("This is Ok."); // Change the type of `message` to `String`
-    let config_path = format!("{}/config.toml", env!("CARGO_MANIFEST_DIR"));
+    let config_path = format!("{}/config", env!("CARGO_MANIFEST_DIR"));
 
     match settings.merge(File::with_name(&config_path)) {
         Ok(_) => (),
