@@ -13,3 +13,4 @@ Cargo.lock
 **/*.rs.bk
 config.toml
 .env
+src/configuration.rs

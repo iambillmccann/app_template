@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 mod components;
+mod configuration;
 mod constants;
 mod pages;
 mod types;

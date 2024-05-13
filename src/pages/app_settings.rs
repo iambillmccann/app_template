@@ -1,20 +1,17 @@
-// src/pages/landing.rs
-extern crate dotenv;
-
-use dioxus::{html::p, prelude::*};
-use std::env;
+use crate::configuration::get_config;
+use dioxus::prelude::*;
 
 #[component]
 pub fn AppSettingsPage(items: String) -> Element {
-    let firebase_project_id = env::var("FIREBASE_PROJECT_ID").unwrap_or_default();
-    log::info!("Firebase Project ID: {}", firebase_project_id);
+    let config = get_config();
+    log::info!("Firebase Project ID: {}", config.FIREBASE_PROJECT_ID);
 
     rsx! {
         div {
             class: "flex items-center justify-center h-screen bg-black text-white text-4xl",
             div {
                 p { "Show this: {items}" },
-                p { "Project id: {firebase_project_id}" },
+                p { "Project id: {config.FIREBASE_PROJECT_ID}" },
             }
         }
     }
