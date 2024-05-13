@@ -9,6 +9,7 @@ use crate::pages::HomePage;
 use crate::pages::LandingPage;
 use crate::pages::PageNotFound;
 use config::{Config, Environment, File};
+use log::LevelFilter;
 use std::collections::HashMap;
 
 use dioxus::prelude::*;
@@ -30,6 +31,8 @@ enum Route {
 }
 
 fn main() {
+    dioxus_logger::init(LevelFilter::Info).expect("failed to init logger");
+
     // Load Firebase settings
     let mut settings = Config::default();
     match settings.merge(File::with_name("config")) {
