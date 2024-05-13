@@ -11,7 +11,7 @@ chrono = { version = "0.4", features = ["serde"] }
 dioxus = { version = "0.5.0", features = ["web", "router"] }
 serde = { version = "1.0", features = ["derive"] }
 config = "0.10.1"
-
+dotenv = "0.15.0"
 
 # Debug
 log = "0.4.19"
