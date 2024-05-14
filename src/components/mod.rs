@@ -9,3 +9,6 @@ pub use stories::Stories;
 
 pub mod preview;
 pub use preview::Preview;
+
+pub mod registration;
+pub use registration::RegistrationForm;

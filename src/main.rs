@@ -9,6 +9,7 @@ use crate::pages::AppSettingsPage;
 use crate::pages::HomePage;
 use crate::pages::LandingPage;
 use crate::pages::PageNotFound;
+use crate::pages::RegistrationPage;
 use config::{Config, Environment, File};
 use log::LevelFilter;
 use std::collections::HashMap;
@@ -25,6 +26,8 @@ enum Route {
     LandingPage {},
     #[route("/home")]
     HomePage {},
+    #[route("/registration")]
+    RegistrationPage {},
     #[route("/settings/:items")]
     AppSettingsPage { items: String },
     #[route("/:..route")]
