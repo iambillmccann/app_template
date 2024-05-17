@@ -3,8 +3,12 @@ use dioxus::prelude::*;
 
 pub fn RegistrationPage() -> Element {
     rsx! {
-        div {
-            class: "flex flex-col md:flex-row-reverse md:h-screen items-center justify-center h-screen bg-black text-white",
+        main {
+            class: "flex flex-col md:flex-row-reverse md:h-screen bg-black text-white",
+            section {
+                class: "flex items-start w-full px-4 mx-auto md:px-0 md:items-center md:w-1/3",
+                p { "Logo" }
+            }
             section {
                 class: "justify-center px-4 md:px-0 md:flex md:w-2/3 md:border-r",
                 div {
