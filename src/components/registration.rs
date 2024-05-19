@@ -7,8 +7,11 @@ pub fn RegistrationForm() -> Element {
             class: "my-4",
             form {
                 onsubmit: move |event| { log::info!("Submitted! {event:?}") },
-                input { name: "email" }
-                br {}
+                div {
+                    class: "mb-3",
+                    label { r#for: "email", "Email" }
+                    input { name: "email" }
+                }
                 input { name: "password" }
                 br {}
                 input { name: "pwd_confirmation" }
