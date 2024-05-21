@@ -6,8 +6,17 @@ pub fn RegistrationPage() -> Element {
         main {
             class: "flex flex-col md:flex-row-reverse md:h-screen bg-black text-white",
             section {
-                class: "flex items-start w-full px-4 mx-auto md:px-0 md:items-center md:w-1/3",
-                p { "Logo" }
+                class: "relative flex items-center justify-center w-full md:w-1/3 px-4 md:px-0",
+                div {
+                    class: "absolute inset-0 flex items-center justify-center",
+                    span {
+                        class: "px-4 text-lg font-semibold bg-black text-white", // Adjust padding and background to match design
+                        "Logo"
+                    }
+                }
+                div {
+                    class: "h-full border-r border-gray-600"
+                }
             }
             section {
                 class: "flex justify-center items-center w-full md:w-2/3 px-4 md:px-0 md:border-r md:border-gray-600",
