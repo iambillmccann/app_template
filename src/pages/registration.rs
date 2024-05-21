@@ -6,7 +6,7 @@ pub fn RegistrationPage() -> Element {
         main {
             class: "flex flex-col md:flex-row-reverse md:h-screen bg-black text-white",
             section {
-                class: "relative flex items-center justify-center w-full md:w-1/3 px-4 md:px-0",
+                class: "relative flex items-center justify-center w-full md:w-1/3 px-4 md:px-0 border-l border-gray-600", // Use border-left for the vertical line
                 div {
                     class: "absolute inset-0 flex items-center justify-center",
                     span {
@@ -14,12 +14,9 @@ pub fn RegistrationPage() -> Element {
                         "Logo"
                     }
                 }
-                div {
-                    class: "h-full border-r border-gray-600"
-                }
             }
             section {
-                class: "flex justify-center items-center w-full md:w-2/3 px-4 md:px-0 md:border-r md:border-gray-600",
+                class: "flex justify-center items-center w-full md:w-2/3 px-4 md:px-0",
                 div {
                     class: "w-full max-w-md space-y-6",
                     h2 { class: "text-xl font-semibold md:text-2xl", "Sign up" }
