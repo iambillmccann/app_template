@@ -10,7 +10,7 @@ pub fn RegistrationPage() -> Element {
                 p { "Logo" }
             }
             section {
-                class: "flex justify-center items-center w-full md:w-2/3 px-4 md:px-0",
+                class: "flex justify-center items-center w-full md:w-2/3 px-4 md:px-0 md:border-r md:border-gray-600",
                 div {
                     class: "w-full max-w-md space-y-6",
                     h2 { class: "text-xl font-semibold md:text-2xl", "Sign up" }

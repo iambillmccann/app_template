@@ -18,7 +18,8 @@ pub fn RegistrationForm() -> Element {
                         class: "block w-full mt-1 p-2.5 bg-gray-800 border border-gray-600 text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500",
                         "type": "email",
                         name: "email",
-                        placeholder: "Email"
+                        placeholder: "Email",
+                        required: true
                     }
                 }
                 // Password Field
@@ -31,7 +32,8 @@ pub fn RegistrationForm() -> Element {
                         class: "block w-full mt-1 p-2.5 bg-gray-800 border border-gray-600 text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500",
                         "type": "password",
                         name: "password",
-                        placeholder: "Password"
+                        placeholder: "Password",
+                        required: true
                     }
                 }
                 // Password Confirmation Field
@@ -44,7 +46,8 @@ pub fn RegistrationForm() -> Element {
                         class: "block w-full mt-1 p-2.5 bg-gray-800 border border-gray-600 text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500",
                         "type": "password",
                         name: "password_confirmation",
-                        placeholder: "Password confirmation"
+                        placeholder: "Password confirmation",
+                        required: true
                     }
                 }
                 // Terms and Conditions
@@ -68,12 +71,18 @@ pub fn RegistrationForm() -> Element {
                         "Sign up"
                     }
                 }
-                // OR Divider
+                // Horizontal Rule with OR Divider
                 div {
-                    class: "flex items-center justify-center mt-6",
+                    class: "relative flex items-center my-6",
+                    div {
+                        class: "flex-grow border-t border-gray-600"
+                    }
                     span {
-                        class: "text-sm text-gray-500",
+                        class: "mx-4 text-sm text-gray-500",
                         "OR"
+                    }
+                    div {
+                        class: "flex-grow border-t border-gray-600"
                     }
                 }
                 // GitHub Button
@@ -82,8 +91,8 @@ pub fn RegistrationForm() -> Element {
                         class: "w-full py-2.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded flex items-center justify-center focus:ring-4 focus:ring-gray-600",
                         "type": "button",
                         // GitHub Icon (use appropriate icon here)
-                        span { class: "mr-2", "🔗" } // Placeholder for GitHub icon
-                        "Continue with GitHub"
+                        span { class: "mr-2", "🔗" } // Placeholder for Google icon
+                        "Continue with Google"
                     }
                 }
             }
