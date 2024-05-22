@@ -2,9 +2,26 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn RegistrationForm() -> Element {
+    // let password = use_signal(|| "".to_string());
+    // let password_confirmation = use_signal(|| "".to_string());
+    let error = use_signal(|| None as Option<String>);
+
+    let onsubmit = move |event: FormEvent| {
+        let password = event.values().get("password").unwrap();
+        let password_confirmation = event.values().get("password_confirmation").unwrap();
+
+        if password != password_confirmation {
+            error.set(Some("Passwords do not match".to_string()));
+        } else {
+            error.set(None);
+            log::info!("Submitted! {event:?}");
+            // Proceed with form submission logic
+        }
+    };
+
     rsx! {
         form {
-            onsubmit: move |event| { log::info!("Submitted! {event:?}") },
+            onsubmit: onsubmit,
             class: "space-y-4",
             div {
                 class: "space-y-4",
