@@ -2,30 +2,28 @@ use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub fn use_state<T: 'static + Clone>(
-    cx: &ScopeState,
-    initial_value: T,
-) -> (Rc<RefCell<T>>, Rc<dyn Fn(T)>) {
-    let state = cx.use_hook(|| Rc::new(RefCell::new(initial_value.clone())));
-    let set_state = {
-        let state = state.clone();
-        Rc::new(move |new_value: T| {
-            *state.borrow_mut() = new_value;
-            cx.needs_update();
-        })
-    };
-    (state.clone(), set_state)
-}
+// pub fn use_state<T: 'static + Clone>(
+//     cx: &ScopeState,
+//     initial_value: T,
+// ) -> (Rc<RefCell<T>>, Rc<dyn Fn(T)>) {
+//     let state = cx.use_hook(|| Rc::new(RefCell::new(initial_value.clone())));
+//     let set_state = {
+//         let state = state.clone();
+//         Rc::new(move |new_value: T| {
+//             *state.borrow_mut() = new_value;
+//             cx.needs_update();
+//         })
+//     };
+//     (state.clone(), set_state)
+// }
 
 #[component]
-pub fn RegistrationForm<'a>(cx: Scope<'a>) -> Element {
-    let (password, set_password) = use_state(&cx, "".to_string());
-    let (password_confirmation, set_password_confirmation) = use_state(&cx, "".to_string());
-    let (error, set_error) = use_state(&cx, None);
-
+pub fn RegistrationForm() -> Element {
     let onsubmit = move |event: FormEvent| {
-        event.prevent_default();
-        if *password.borrow() != *password_confirmation.borrow() {
+        let password = event.values().get("password").unwrap();
+        let password_confirmation = event.values().get("password_confirmation").unwrap();
+
+        if password != password_confirmation {
             set_error(Some("Passwords do not match".to_string()));
         } else {
             set_error(None);
@@ -34,7 +32,7 @@ pub fn RegistrationForm<'a>(cx: Scope<'a>) -> Element {
         }
     };
 
-    cx.render(rsx! {
+    rsx! {
         form {
             onsubmit: onsubmit,
             class: "space-y-4",
@@ -145,5 +143,5 @@ pub fn RegistrationForm<'a>(cx: Scope<'a>) -> Element {
                 }
             }
         }
-    })
+    }
 }
