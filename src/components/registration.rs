@@ -2,40 +2,41 @@ use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub fn use_state<T: 'static + Clone>(initial_value: T) -> (Rc<RefCell<T>>, Box<dyn Fn(T)>) {
-    let state = use_hook(|| Rc::new(RefCell::new(initial_value.clone())));
+pub fn use_state<T: 'static + Clone>(
+    cx: &ScopeState,
+    initial_value: T,
+) -> (Rc<RefCell<T>>, Rc<dyn Fn(T)>) {
+    let state = cx.use_hook(|| Rc::new(RefCell::new(initial_value.clone())));
     let set_state = {
         let state = state.clone();
-        Box::new(move |new_value: T| {
+        Rc::new(move |new_value: T| {
             *state.borrow_mut() = new_value;
-            force_update();
+            cx.needs_update();
         })
     };
     (state.clone(), set_state)
 }
 
-fn force_update() {
-    use_effect(|| {});
-}
-
 #[component]
-pub fn RegistrationForm() -> Element {
-    let (password, set_pwd) = use_state(|| "".to_string());
-    let (password_confirmation, set_pwd_confirm) = use_state(|| "".to_string());
-    let (error, set_error) = use_state(|| None);
+pub fn RegistrationForm<'a>(cx: Scope<'a>) -> Element {
+    let (password, set_password) = use_state(&cx, "".to_string());
+    let (password_confirmation, set_password_confirmation) = use_state(&cx, "".to_string());
+    let (error, set_error) = use_state(&cx, None);
 
-    rsx! {
+    let onsubmit = move |event: FormEvent| {
+        event.prevent_default();
+        if *password.borrow() != *password_confirmation.borrow() {
+            set_error(Some("Passwords do not match".to_string()));
+        } else {
+            set_error(None);
+            log::info!("Submitted! {event:?}");
+            // Proceed with form submission logic
+        }
+    };
+
+    cx.render(rsx! {
         form {
-
-            onsubmit: move |event| {
-                if *password.borrow() != *password_confirmation.borrow() {
-                    set_error(Some("Passwords do not match".to_string()));
-                    return;
-                }
-                set_error(None);
-                log::info!("Submitted! {event:?}")
-            },
-
+            onsubmit: onsubmit,
             class: "space-y-4",
             div {
                 class: "space-y-4",
@@ -64,7 +65,9 @@ pub fn RegistrationForm() -> Element {
                         "type": "password",
                         name: "password",
                         placeholder: "Password",
-                        required: true
+                        required: true,
+                        value: "{password.borrow()}",
+                        oninput: move |e| set_password(e.value().clone()),
                     }
                 }
                 // Password Confirmation Field
@@ -78,16 +81,30 @@ pub fn RegistrationForm() -> Element {
                         "type": "password",
                         name: "password_confirmation",
                         placeholder: "Password confirmation",
-                        required: true
+                        required: true,
+                        value: "{password_confirmation.borrow()}",
+                        oninput: move |e| set_password_confirmation(e.value().clone()),
                     }
                 }
+                // Error Message
+                {if let Some(ref err) = *error.borrow() {
+                    rsx! {
+                        div {
+                            class: "block text-sm font-medium text-red-500",
+                            "{err}"
+                        }
+                    }
+                } else {
+                    rsx! {""}
+                }}
                 // Terms and Conditions
                 div {
                     class: "flex items-start",
                     input {
                         class: "h-4 w-4 mt-1 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500",
                         "type": "checkbox",
-                        name: "terms"
+                        name: "terms",
+                        required: true,
                     }
                     label {
                         class: "ml-2 text-sm text-gray-400",
@@ -128,5 +145,5 @@ pub fn RegistrationForm() -> Element {
                 }
             }
         }
-    }
+    })
 }
