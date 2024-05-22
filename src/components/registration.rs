@@ -1,10 +1,41 @@
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
+
+pub fn use_state<T: 'static + Clone>(initial_value: T) -> (Rc<RefCell<T>>, Box<dyn Fn(T)>) {
+    let state = use_hook(|| Rc::new(RefCell::new(initial_value.clone())));
+    let set_state = {
+        let state = state.clone();
+        Box::new(move |new_value: T| {
+            *state.borrow_mut() = new_value;
+            force_update();
+        })
+    };
+    (state.clone(), set_state)
+}
+
+fn force_update() {
+    use_effect(|| {});
+}
 
 #[component]
 pub fn RegistrationForm() -> Element {
+    let (password, set_pwd) = use_state(|| "".to_string());
+    let (password_confirmation, set_pwd_confirm) = use_state(|| "".to_string());
+    let (error, set_error) = use_state(|| None);
+
     rsx! {
         form {
-            onsubmit: move |event| { log::info!("Submitted! {event:?}") },
+
+            onsubmit: move |event| {
+                if *password.borrow() != *password_confirmation.borrow() {
+                    set_error(Some("Passwords do not match".to_string()));
+                    return;
+                }
+                set_error(None);
+                log::info!("Submitted! {event:?}")
+            },
+
             class: "space-y-4",
             div {
                 class: "space-y-4",
