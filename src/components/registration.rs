@@ -1,22 +1,28 @@
 use dioxus::prelude::*;
+use web_sys::HtmlInputElement;
 
 #[component]
 pub fn RegistrationForm() -> Element {
-    // let password = use_signal(|| "".to_string());
-    // let password_confirmation = use_signal(|| "".to_string());
-    let error = use_signal(|| None as Option<String>);
+    let password = use_signal(|| "".to_string());
+    let password_confirmation = use_signal(|| "".to_string());
+    let passwords_match = password.map2(&password_confirmation, |p, pc| p == pc);
+
+    let oninput_password = {
+        let password = password.clone();
+        move |event: Event<HtmlInputElement>| {
+            password.set(event.data.value());
+        }
+    };
+
+    let oninput_password_confirmation = {
+        let password_confirmation = password_confirmation.clone();
+        move |event: Event<HtmlInputElement>| {
+            password_confirmation.set(event.data.value());
+        }
+    };
 
     let onsubmit = move |event: FormEvent| {
-        let password = event.values().get("password").unwrap();
-        let password_confirmation = event.values().get("password_confirmation").unwrap();
-
-        if password != password_confirmation {
-            error.set(Some("Passwords do not match".to_string()));
-        } else {
-            error.set(None);
-            log::info!("Submitted! {event:?}");
-            // Proceed with form submission logic
-        }
+        log::info!("In onsubmit with {event:?}");
     };
 
     rsx! {
