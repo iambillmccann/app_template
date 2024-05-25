@@ -17,6 +17,10 @@ pub fn RegistrationForm() -> Element {
         let values = event.values();
         password_confirmation.set(values.get("password").unwrap().as_value());
         password.set(values.get("password_confirmation").unwrap().as_value());
+
+        if password != password_confirmation {
+            log::info!("Passwords do not match.");
+        }
     };
 
     rsx! {
