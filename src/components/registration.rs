@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use serde::Deserialize;
+// use serde::Deserialize;
 
 // #[derive(Deserialize, Debug)]
 // struct FormData {
@@ -14,11 +14,11 @@ pub fn RegistrationForm() -> Element {
 
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
-        let pwd = event.values().get("password").unwrap();
-        log::info!("Form rendered successfully: {:?}", pwd);
-        // let form_data = event.data();
+        let values = event.values();
+        let pwd = values.get("password").unwrap();
+        let _pwd_confirm = values.get("password").unwrap();
 
-        // let FormData = form_data.parsed_values();
+        log::info!("Form rendered successfully: {:?}", pwd);
     };
 
     rsx! {
