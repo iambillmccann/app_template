@@ -9,14 +9,17 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn RegistrationForm() -> Element {
-    let password = use_signal(|| "Thisisatest".to_string());
-    let password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
+    let mut password = use_signal(|| "Thisisatest".to_string());
+    let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
 
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
         let values = event.values();
         let pwd = values.get("password").unwrap();
-        let _pwd_confirm = values.get("password").unwrap();
+        let pwd_confirm = values.get("password_confirmation").unwrap();
+
+        password.set(pwd_confirm.as_value());
+        password_confirmation.set(pwd.as_value());
 
         log::info!("Form rendered successfully: {:?}", pwd);
     };
