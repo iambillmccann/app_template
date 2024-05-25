@@ -1,33 +1,29 @@
 use dioxus::prelude::*;
-use web_sys::HtmlInputElement;
+use serde::Deserialize;
+
+// #[derive(Deserialize, Debug)]
+// struct FormData {
+//     password: String,
+//     terms: Option<String>, // Include only the fields you need
+// }
 
 #[component]
 pub fn RegistrationForm() -> Element {
-    let password = use_signal(|| "".to_string());
-    let password_confirmation = use_signal(|| "".to_string());
-    let passwords_match = password.map2(&password_confirmation, |p, pc| p == pc);
+    let password = use_signal(|| "Thisisatest".to_string());
+    let password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
 
-    let oninput_password = {
-        let password = password.clone();
-        move |event: Event<HtmlInputElement>| {
-            password.set(event.data.value());
-        }
-    };
+    let validate = move |event: FormEvent| {
+        event.stop_propagation(); // Prevent the form from being submitted
+        let pwd = event.values().get("password").unwrap();
+        log::info!("Form rendered successfully: {:?}", pwd);
+        // let form_data = event.data();
 
-    let oninput_password_confirmation = {
-        let password_confirmation = password_confirmation.clone();
-        move |event: Event<HtmlInputElement>| {
-            password_confirmation.set(event.data.value());
-        }
-    };
-
-    let onsubmit = move |event: FormEvent| {
-        log::info!("In onsubmit with {event:?}");
+        // let FormData = form_data.parsed_values();
     };
 
     rsx! {
         form {
-            onsubmit: onsubmit,
+            onsubmit: validate,
             class: "space-y-4",
             div {
                 class: "space-y-4",
@@ -56,6 +52,7 @@ pub fn RegistrationForm() -> Element {
                         "type": "password",
                         name: "password",
                         placeholder: "Password",
+                        value: password,
                         required: true
                     }
                 }
@@ -70,6 +67,7 @@ pub fn RegistrationForm() -> Element {
                         "type": "password",
                         name: "password_confirmation",
                         placeholder: "Password confirmation",
+                        value: password_confirmation,
                         required: true
                     }
                 }
