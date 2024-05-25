@@ -15,13 +15,8 @@ pub fn RegistrationForm() -> Element {
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
         let values = event.values();
-        let pwd = values.get("password").unwrap();
-        let pwd_confirm = values.get("password_confirmation").unwrap();
-
-        password.set(pwd_confirm.as_value());
-        password_confirmation.set(pwd.as_value());
-
-        log::info!("Form rendered successfully: {:?}", pwd);
+        password_confirmation.set(values.get("password").unwrap().as_value());
+        password.set(values.get("password_confirmation").unwrap().as_value());
     };
 
     rsx! {
