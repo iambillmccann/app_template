@@ -1,11 +1,5 @@
 use dioxus::prelude::*;
-// use serde::Deserialize;
-
-// #[derive(Deserialize, Debug)]
-// struct FormData {
-//     password: String,
-//     terms: Option<String>, // Include only the fields you need
-// }
+use web_sys::window;
 
 #[component]
 pub fn RegistrationForm() -> Element {
@@ -19,6 +13,8 @@ pub fn RegistrationForm() -> Element {
         password.set(values.get("password_confirmation").unwrap().as_value());
 
         if password != password_confirmation {
+            let window = window().expect("no global `window` exists");
+            let _ = window.alert_with_message("Passwords do not match.");
             log::info!("Passwords do not match.");
         }
     };
