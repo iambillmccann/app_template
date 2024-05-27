@@ -5,17 +5,20 @@ use web_sys::window;
 pub fn RegistrationForm() -> Element {
     let mut password = use_signal(|| "Thisisatest".to_string());
     let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
+    let mut not_matched = use_signal(|| false);
 
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
         let values = event.values();
-        password_confirmation.set(values.get("password").unwrap().as_value());
-        password.set(values.get("password_confirmation").unwrap().as_value());
+        password.set(values.get("password").unwrap().as_value());
+        password_confirmation.set(values.get("password_confirmation").unwrap().as_value());
 
         if password != password_confirmation {
             let window = window().expect("no global `window` exists");
             let _ = window.alert_with_message("Passwords do not match.");
-            log::info!("Passwords do not match.");
+            not_matched.set(true);
+        } else {
+            not_matched.set(false);
         }
     };
 
@@ -67,6 +70,13 @@ pub fn RegistrationForm() -> Element {
                         placeholder: "Password confirmation",
                         value: password_confirmation,
                         required: true
+                    }
+                }
+                // Error Message
+                if *not_matched.get() {
+                    div {
+                        class: "error",
+                        "Passwords do not match."
                     }
                 }
                 // Terms and Conditions
