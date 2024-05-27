@@ -73,12 +73,20 @@ pub fn RegistrationForm() -> Element {
                     }
                 }
                 // Error Message
-                if *not_matched.get() {
-                    div {
-                        class: "error",
-                        "Passwords do not match."
+                {not_matched.with(|not_matched| {
+                    if *not_matched {
+                        div {
+                            class: "error",
+                            "Passwords do not match."
+                        }
                     }
-                }
+                })}
+                // if *not_matched.get() {
+                //     div {
+                //         class: "error",
+                //         "Passwords do not match."
+                //     }
+                // }
                 // Terms and Conditions
                 div {
                     class: "flex items-start",
