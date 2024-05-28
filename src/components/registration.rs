@@ -61,7 +61,7 @@ pub fn RegistrationForm() -> Element {
                 div {
                     label {
                         class: "block text-sm font-medium text-gray-300",
-                        "Password confirmation"
+                        "Password Confirmation"
                     }
                     input {
                         class: "block w-full mt-1 p-2.5 bg-gray-800 border border-gray-600 text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500",
@@ -77,7 +77,7 @@ pub fn RegistrationForm() -> Element {
                     if *not_matched {
                         div {
                             class: "error",
-                            "Passwords do not match."
+                            children: vec![text("Passwords do not match.")]
                         }
                     }
                 })}
