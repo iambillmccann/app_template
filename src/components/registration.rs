@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use web_sys::window;
+// use web_sys::window;
 
 #[component]
 pub fn RegistrationForm() -> Element {
@@ -14,8 +14,6 @@ pub fn RegistrationForm() -> Element {
         password_confirmation.set(values.get("password_confirmation").unwrap().as_value());
 
         if password != password_confirmation {
-            let window = window().expect("no global `window` exists");
-            let _ = window.alert_with_message("Passwords do not match.");
             not_matched.set(true);
         } else {
             not_matched.set(false);
@@ -73,14 +71,14 @@ pub fn RegistrationForm() -> Element {
                     }
                 }
                 // Error Message
-                {not_matched.with(|not_matched| {
-                    if *not_matched {
-                        div {
-                            class: "error",
-                            children: vec![text("Passwords do not match.")]
-                        }
+                // let window = window().expect("no global `window` exists");
+                // let _ = window.alert_with_message(not_matched.to_string().as_str());
+                if not_matched() {
+                    div {
+                        class: "error",
+                        "Passwords do not match."
                     }
-                })}
+                }
                 // if *not_matched.get() {
                 //     div {
                 //         class: "error",
