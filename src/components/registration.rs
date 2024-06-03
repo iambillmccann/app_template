@@ -10,14 +10,22 @@ pub fn RegistrationForm() -> Element {
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
         let values = event.values();
-        password.set(values.get("password").unwrap().as_value());
-        password_confirmation.set(values.get("password_confirmation").unwrap().as_value());
+        password.set(values.get("password").unwrap().as_value().to_string());
+        password_confirmation.set(
+            values
+                .get("password_confirmation")
+                .unwrap()
+                .as_value()
+                .to_string(),
+        );
 
-        if password != password_confirmation {
+        if password.to_string() != password_confirmation.to_string() {
             not_matched.set(true);
         } else {
             not_matched.set(false);
         }
+        // let window = window().expect("no global `window` exists");
+        // let _ = window.alert_with_message(not_matched.to_string().as_str());
     };
 
     rsx! {
@@ -71,8 +79,6 @@ pub fn RegistrationForm() -> Element {
                     }
                 }
                 // Error Message
-                // let window = window().expect("no global `window` exists");
-                // let _ = window.alert_with_message(not_matched.to_string().as_str());
                 if not_matched() {
                     div {
                         class: "error",
