@@ -1,14 +1,13 @@
 use dioxus::prelude::*;
-use regex::Regex;
-use web_sys::window;
+use web_sys::window; // This is temporary code
 
 #[component]
 pub fn RegistrationForm() -> Element {
-    let window = window().expect("no global `window` exists");
+    let _window = window().expect("no global `window` exists"); // This is temporary code
     let mut password = use_signal(|| "Thisisatest".to_string());
     let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
     let mut not_matched = use_signal(|| false);
-    let complexity_error = use_signal(|| false);
+    let mut complexity_error = use_signal(|| false);
 
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
@@ -22,23 +21,42 @@ pub fn RegistrationForm() -> Element {
                 .to_string(),
         );
 
-        let complexity_regex = Regex::new(r"(?=.*[a-z])(?=.*[A-Z])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])|(?=.*\d)(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])").unwrap();
-
         if password.to_string() != password_confirmation.to_string() {
             not_matched.set(true);
         } else {
             not_matched.set(false);
         }
 
-        // if password.to_string().len() >= 12
-        //     && complexity_regex.is_match(password.to_string().as_str())
-        // {
-        //     complexity_error.set(false);
-        // } else {
-        //     complexity_error.set(true);
-        // }
+        // Password complexity check
+        let binding = password.to_string();
+        let pass = binding.as_str();
 
-        let _ = window.alert_with_message(not_matched.to_string().as_str());
+        let length_ok = pass.len() >= 12;
+        let has_uppercase = pass.chars().any(|c| c.is_uppercase());
+        let has_lowercase = pass.chars().any(|c| c.is_lowercase());
+        let has_digit = pass.chars().any(|c| c.is_digit(10));
+        let special_chars = "~!@#$%^&*-_()[]{}\\|,<.>/?";
+        let has_special = pass.chars().any(|c| special_chars.contains(c));
+
+        let mut complexity_count = 0;
+        if has_uppercase {
+            complexity_count += 1;
+        }
+        if has_lowercase {
+            complexity_count += 1;
+        }
+        if has_digit {
+            complexity_count += 1;
+        }
+        if has_special {
+            complexity_count += 1;
+        }
+
+        if length_ok && complexity_count >= 2 {
+            complexity_error.set(false);
+        } else {
+            complexity_error.set(true);
+        }
     };
 
     rsx! {
@@ -105,13 +123,6 @@ pub fn RegistrationForm() -> Element {
                         "Passwords do not match."
                     }
                 }
-                // if *not_matched.get() {
-                //     div {
-                //         class: "error",
-                //         "Passwords do not match."
-                //     }
-                // }
-                // Terms and Conditions
                 div {
                     class: "flex items-start",
                     input {
