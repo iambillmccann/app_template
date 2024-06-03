@@ -1,11 +1,14 @@
 use dioxus::prelude::*;
-// use web_sys::window;
+use regex::Regex;
+use web_sys::window;
 
 #[component]
 pub fn RegistrationForm() -> Element {
+    let window = window().expect("no global `window` exists");
     let mut password = use_signal(|| "Thisisatest".to_string());
     let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
     let mut not_matched = use_signal(|| false);
+    let complexity_error = use_signal(|| false);
 
     let validate = move |event: FormEvent| {
         event.stop_propagation(); // Prevent the form from being submitted
@@ -19,13 +22,23 @@ pub fn RegistrationForm() -> Element {
                 .to_string(),
         );
 
+        let complexity_regex = Regex::new(r"(?=.*[a-z])(?=.*[A-Z])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])|(?=.*\d)(?=.*[~!@#$%^&*\-_\(\)\[\]\{\}\\|,<.>/?])").unwrap();
+
         if password.to_string() != password_confirmation.to_string() {
             not_matched.set(true);
         } else {
             not_matched.set(false);
         }
-        // let window = window().expect("no global `window` exists");
-        // let _ = window.alert_with_message(not_matched.to_string().as_str());
+
+        // if password.to_string().len() >= 12
+        //     && complexity_regex.is_match(password.to_string().as_str())
+        // {
+        //     complexity_error.set(false);
+        // } else {
+        //     complexity_error.set(true);
+        // }
+
+        let _ = window.alert_with_message(not_matched.to_string().as_str());
     };
 
     rsx! {
@@ -61,6 +74,13 @@ pub fn RegistrationForm() -> Element {
                         placeholder: "Password",
                         value: password,
                         required: true
+                    }
+                }
+                // Error Message
+                if complexity_error() {
+                    div {
+                        class: "error",
+                        "Your password must be more complex."
                     }
                 }
                 // Password Confirmation Field
