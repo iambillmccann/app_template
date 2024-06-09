@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
-use reqwest::Client;
-use serde::Deserialize;
-// use std::env;
+use gloo_console::log;
+use gloo_net::http::Request;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
 use web_sys::window;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct Config {
     firebase_api_key: String,
 }
@@ -16,7 +16,7 @@ impl Config {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct FirebaseResponse {
     _idToken: String,
     _email: String,
@@ -27,7 +27,6 @@ struct FirebaseResponse {
 
 async fn register_user(email: &str, password: &str) -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
-    let client = Client::new();
     let url = format!(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={}",
         config.firebase_api_key
@@ -39,9 +38,14 @@ async fn register_user(email: &str, password: &str) -> Result<(), Box<dyn std::e
         "returnSecureToken": true
     });
 
-    let response: FirebaseResponse = client.post(&url).json(&params).send().await?.json().await?;
+    let response: FirebaseResponse = Request::post(&url)
+        .json(&params)?
+        .send()
+        .await?
+        .json()
+        .await?;
 
-    log::info!("User registered: {:?}", response);
+    log!("User registered: {:?}", serde_json::to_string(&response)?);
 
     Ok(())
 }
