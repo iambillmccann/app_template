@@ -47,7 +47,7 @@ async fn register_user(email: &str, password: &str) -> Result<FirebaseResponse, 
 
 #[component]
 pub fn RegistrationForm() -> Element {
-    let _window = window().expect("no global `window` exists"); // This is temporary code
+    let window = window().expect("no global `window` exists"); // This is temporary code
     let mut password = use_signal(|| "Thisisatest".to_string());
     let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
     let mut not_matched = use_signal(|| false);
@@ -105,16 +105,24 @@ pub fn RegistrationForm() -> Element {
         }
 
         // Form submission logic
+        use web_sys::window;
+
         let email_value = values.get("email").unwrap().as_value().to_string();
         let password_value = pass.to_string();
 
         wasm_bindgen_futures::spawn_local(async move {
             match register_user(&email_value, &password_value).await {
                 Ok(response) => {
-                    // Handle successful registration
+                    let window = window().expect("no global `window` exists");
+                    window
+                        .alert_with_message("Registration successful")
+                        .expect("alert failed");
                 }
                 Err(e) => {
-                    // Handle error
+                    let window = window().expect("no global `window` exists");
+                    window
+                        .alert_with_message("Registration failed")
+                        .expect("alert failed");
                 }
             }
         });
