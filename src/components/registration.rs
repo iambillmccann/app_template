@@ -1,5 +1,49 @@
 use dioxus::prelude::*;
+use dioxus_elements::sub;
+use reqwest::Error;
+use serde::Deserialize;
 use web_sys::window; // This is temporary code
+
+#[derive(Deserialize, Debug)]
+struct Config {
+    firebase_api_key: String,
+}
+
+impl Config {
+    pub fn from_env() -> Result<Self, envy::Error> {
+        envy::from_env()
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct FirebaseResponse {
+    idToken: String,
+    email: String,
+    refreshToken: String,
+    expiresIn: String,
+    localId: String,
+}
+
+async fn register_user(email: &str, password: &str) -> Result<FirebaseResponse, Error> {
+    let config = Config::from_env().expect("Failed to load config");
+    let client = reqwest::Client::new();
+    let params = [
+        ("email", email),
+        ("password", password),
+        ("returnSecureToken", "true"),
+    ];
+    let res = client
+        .post(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=".to_owned()
+                + &config.firebase_api_key,
+        )
+        .json(&params)
+        .send()
+        .await?
+        .json::<FirebaseResponse>()
+        .await?;
+    Ok(res)
+}
 
 #[component]
 pub fn RegistrationForm() -> Element {
@@ -23,6 +67,7 @@ pub fn RegistrationForm() -> Element {
 
         if password.to_string() != password_confirmation.to_string() {
             not_matched.set(true);
+            return;
         } else {
             not_matched.set(false);
         }
@@ -56,7 +101,23 @@ pub fn RegistrationForm() -> Element {
             complexity_error.set(false);
         } else {
             complexity_error.set(true);
+            return;
         }
+
+        // Form submission logic
+        let email_value = values.get("email").unwrap().as_value().to_string();
+        let password_value = pass.to_string();
+
+        wasm_bindgen_futures::spawn_local(async move {
+            match register_user(&email_value, &password_value).await {
+                Ok(response) => {
+                    // Handle successful registration
+                }
+                Err(e) => {
+                    // Handle error
+                }
+            }
+        });
     };
 
     rsx! {
