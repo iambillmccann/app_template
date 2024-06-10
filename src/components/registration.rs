@@ -1,64 +1,16 @@
 use dioxus::prelude::*;
-use gloo_console::log;
-use gloo_net::http::Request;
-use serde::{Deserialize, Serialize};
-use wasm_bindgen_futures::spawn_local;
-use web_sys::window;
-
-#[derive(Deserialize, Serialize, Debug)]
-struct Config {
-    firebase_api_key: String,
-}
-
-impl Config {
-    pub fn from_env() -> Result<Self, envy::Error> {
-        envy::from_env()
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-struct FirebaseResponse {
-    _idToken: String,
-    _email: String,
-    _refreshToken: String,
-    _expiresIn: String,
-    _localId: String,
-}
-
-async fn register_user(email: &str, password: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let config = Config::from_env()?;
-    let url = format!(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={}",
-        config.firebase_api_key
-    );
-
-    let params = serde_json::json!({
-        "email": email,
-        "password": password,
-        "returnSecureToken": true
-    });
-
-    let response: FirebaseResponse = Request::post(&url)
-        .json(&params)?
-        .send()
-        .await?
-        .json()
-        .await?;
-
-    log!("User registered: {:?}", serde_json::to_string(&response)?);
-
-    Ok(())
-}
+use web_sys::window; // This is temporary code
 
 #[component]
 pub fn RegistrationForm() -> Element {
     let _window = window().expect("no global `window` exists"); // This is temporary code
-    let mut password = use_signal(|| "".to_string());
-    let mut password_confirmation = use_signal(|| "".to_string());
+    let mut password = use_signal(|| "Thisisatest".to_string());
+    let mut password_confirmation = use_signal(|| "Thisisalsoatest".to_string());
     let mut not_matched = use_signal(|| false);
     let mut complexity_error = use_signal(|| false);
 
     let validate = move |event: FormEvent| {
+        event.stop_propagation(); // Prevent the form from being submitted
         let values = event.values();
         password.set(values.get("password").unwrap().as_value().to_string());
         password_confirmation.set(
@@ -104,16 +56,6 @@ pub fn RegistrationForm() -> Element {
             complexity_error.set(false);
         } else {
             complexity_error.set(true);
-        }
-
-        if !not_matched() && !complexity_error() {
-            let email = values.get("email").unwrap().as_value().to_string();
-            let password = password.to_string();
-            spawn_local(async move {
-                if let Err(e) = register_user(&email, &password).await {
-                    log::error!("Error registering user: {:?}", e);
-                }
-            });
         }
     };
 
